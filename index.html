@@ -7,9 +7,67 @@
     <link rel="stylesheet" href="assets\css\index.css" />
   </head>
   <body>
-    <h1 class="game-title">Tank Game</h1>
+    <h1 class="game-title">Tank Wars</h1>
     <canvas id="game-board"></canvas>
-    <div class="scoreboard">
+    <div class="input">
+      <div class="player-input1">
+        <p> Player 1 : </p>
+          <span>Name:
+            <input type = "text" id = "player1" name = "player1Var" placeholder = "Enter Name">
+          </span>
+          <div class = "player1Radios">
+            <p>Color : </p>
+              <div class = "redRadio1">
+                
+                <input type = "radio" name = "colorOption1" id = "Red1" value = "Red">
+                <label for="Red1"></label>
+              </div>
+              <div class = "blueRadio1">
+                <input type = "radio" name = "colorOption1" id = "Blue1" value = "Blue">
+                <label for="Blue1"></label>
+              </div>
+              <div class = "yellowRadio1">
+                <input type = "radio" name = "colorOption1" id = "Yellow1" value = "Yellow">
+                <label for="Yellow1"></label>
+              </div>
+              <div class = "greenRadio1">
+                <input type = "radio" name = "colorOption1" id = "Green1" value = "Green">
+                <label for="Green1"></label>
+              </div>
+          </div>
+      </div>
+
+      <div class="player-input2">
+        <p> Player 2: </p>
+          <span>
+              Name:
+            <input type = "text" id = "player2" name = "player2Var" placeholder = "Enter Name">
+          </span>
+          <div class = "player2Radios">
+            <p>Color : </p>
+              <div class = "redRadio2">
+                <input type = "radio" name = "colorOption2" id = "Red2" value = "Red">
+                <label for="Red2"></label>
+              </div>
+              <div class = "blueRadio2">
+                <input type = "radio" name = "colorOption2" id = "Blue2" value = "Blue">
+                <label for="Blue2"></label>
+              </div>
+              <div class = "yellowRadio2">
+                <input type = "radio" name = "colorOption2" id = "Yellow2" value = "Yellow">
+                <label for="Yellow2"></label>
+              </div>
+              <div class = "greenRadio2">
+                <input type = "radio" name = "colorOption2" id = "Green2" value = "Green">
+                <label for="Green2"></label>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class = "tempInput"> <button class = "startButton"  >Start Game</button></div>
+      <div class = "playerScores">
       <div class="player-score">
         <span class="name">Player 1</span
         ><span
@@ -25,6 +83,6 @@
         >
       </div>
     </div>
-    <script src="assets\js\main.js"></script>
+
   </body>
 </html>
