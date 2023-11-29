@@ -19,15 +19,13 @@ body {
 text-align: center;
 }
 #game-board {
-    width:600px;
-    height:325px;
+
     border:2px solid black;
 }
 .scoreboard {
     margin-top: 10px;
     display: flex;
     /* border:2px solid blue; */
-    width:600px;
     justify-content: space-around;
 
 }
