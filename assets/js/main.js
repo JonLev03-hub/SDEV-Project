@@ -75,6 +75,9 @@ function drawWalls(currentMap) {
     }
   }
 }
+function calculateDistance(x1, y1, x2, y2) {
+  return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+}
 class Tank {
   constructor() {
     // [this.x, this.y] = [15, 15];
@@ -134,12 +137,32 @@ class Tank {
   drive(direction) {
     var vx = this.speed * Math.cos(this.rotation + Math.PI / 2);
     var vy = this.speed * Math.sin(this.rotation + Math.PI / 2);
+    let testx = 0;
+    let testy = 0;
     if (direction == "forward") {
-      this.x -= vx;
-      this.y -= vy;
+      testx = this.x - vx;
+      testy = this.y - vy;
     } else if (direction == "backward") {
-      this.x += vx;
-      this.y += vy;
+      testx = this.x + vx;
+      testy = this.y + vy;
+    }
+    console.log(Math.round(this.y / 10), Math.round(testx / 10));
+    let isWall = currentMap[Math.round(this.y / 10)][Math.round(this.x / 10)];
+    let distanceToWall = calculateDistance(
+      Math.round(this.y / 10),
+      Math.round(this.x / 10),
+      this.x,
+      this.y
+    );
+    let distanceToCorner = Math.sqrt(
+      (this.width / 2) ** 2 + (this.height / 2) ** 2
+    );
+    console.log(distanceToCorner, distanceToWall);
+    if (!isWall || distanceToWall > distanceToCorner) {
+      this.x = testx;
+    }
+    if (!currentMap[Math.round(testy / 10)][Math.round(this.x / 10)]) {
+      this.y = testy;
     }
   }
 }
