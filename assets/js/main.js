@@ -5,21 +5,22 @@ canvas.height = 300;
 const ctx = canvas.getContext("2d");
 
 // Object to track pressed keys
-const pressedKeys = {};
+const pressedKeys = new Set();
 const mouseInput = {};
-
+var playing = false;
 // game variables
 
 // Function to update the pressedKeys object when a key is pressed
 function handleKeyDown(event) {
-  pressedKeys[event.key] = true;
+  pressedKeys.add(event.key);
   // console.log(mouseInput, pressedKeys);
 }
 
 // Function to update the pressedKeys object when a key is released
 function handleKeyUp(event) {
-  pressedKeys[event.key] = false;
-  //console.log(mouseInput, pressedKeys);
+  pressedKeys.delete(event.key);
+  // pressedKeys[event.key] = false;
+  // console.log(mouseInput, pressedKeys);
 }
 
 // Function to update the mouse position
@@ -75,10 +76,10 @@ function drawWalls(currentMap) {
   }
 }
 class Tank {
-  constructor(x, y, rotation) {
+  constructor() {
     // [this.x, this.y] = [15, 15];
     [this.x, this.y] = this.getSpawnLocation();
-    this.rotation = rotation || 0;
+    this.rotation = 0;
     this.bullets = [];
     console.log(this.x, this.y);
     this.img = tankImage1;
@@ -86,6 +87,9 @@ class Tank {
     this.height = 10;
     this.radius = 5;
     this.color = "red";
+    this.rotationSpeed = (2 * Math.PI) / 60;
+    console.log(this.rotationSpeed);
+    this.speed = 1;
   }
   getSpawnLocation() {
     let x = Math.floor(((canvas.width - 20) * Math.random()) / 10) * 10 + 5;
@@ -112,11 +116,31 @@ class Tank {
     ctx.fill(); // Draw the circle outline
     ctx.closePath();
     // this draws a 5px radius hitbox
-    ctx.arc(0, 0, 5, 0, 2 * Math.PI);
-    ctx.stroke();
+    // ctx.arc(0, 0, 5, 0, 2 * Math.PI);
+    // ctx.stroke();
 
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.fillStyle = "black";
+  }
+
+  rotate(direction) {
+    console.log(direction, this.rotation);
+    if (direction == "left") {
+      this.rotation -= this.rotationSpeed;
+    } else if (direction == "right") {
+      this.rotation += this.rotationSpeed;
+    }
+  }
+  drive(direction) {
+    var vx = this.speed * Math.cos(this.rotation + Math.PI / 2);
+    var vy = this.speed * Math.sin(this.rotation + Math.PI / 2);
+    if (direction == "forward") {
+      this.x -= vx;
+      this.y -= vy;
+    } else if (direction == "backward") {
+      this.x += vx;
+      this.y += vy;
+    }
   }
 }
 // code to start a round
@@ -131,6 +155,8 @@ function startRound() {
   // create tanks
   p1 = new Tank();
   p2 = new Tank();
+
+  playing = true;
 }
 
 // game loop function once build map function is completed.
@@ -143,8 +169,48 @@ function gameLoop() {
   requestAnimationFrame(gameLoop); // Call the game loop recursively
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawWalls(currentMap);
-  p1.draw();
-  p2.draw();
+
+  if (playing) {
+    // tasks to do for the game running here
+
+    // update all objects
+
+    // check for any player inputs
+    pressedKeys.forEach((key) => {
+      console.log(key);
+      switch (key) {
+        // rotation
+        case "a":
+          p1.rotate("left");
+          break;
+        case "d":
+          p1.rotate("right");
+          break;
+        case "ArrowLeft":
+          p2.rotate("left");
+          break;
+        case "ArrowRight":
+          p2.rotate("right");
+          break;
+        // drive
+        case "w":
+          p1.drive("forward");
+          break;
+        case "s":
+          p1.drive("backward");
+          break;
+        case "ArrowUp":
+          p2.drive("forward");
+          break;
+        case "ArrowDown":
+          p2.drive("backward");
+          break;
+      }
+    });
+    // draw all objects
+    p1.draw();
+    p2.draw();
+  }
   // p1.x += 1;
 }
 
