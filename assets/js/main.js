@@ -158,7 +158,7 @@ class Tank {
       (this.width / 2) ** 2 + (this.height / 2) ** 2
     );
     console.log(distanceToCorner, distanceToWall);
-    if (!isWall || distanceToWall > distanceToCorner) {
+    if (!()) {
       this.x = testx;
     }
     if (!currentMap[Math.round(testy / 10)][Math.round(this.x / 10)]) {
