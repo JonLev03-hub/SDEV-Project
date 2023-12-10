@@ -9,11 +9,24 @@ const pressedKeys = new Set();
 const mouseInput = {};
 var playing = false;
 // game variables
+function Distance(x1, y1, x2, y2) {
+  const dx = x2 - x1;
+  const dy = y2 - y1;
 
+  return Math.sqrt(dx * dx + dy * dy);
+}
 // Function to update the pressedKeys object when a key is pressed
 function handleKeyDown(event) {
   pressedKeys.add(event.key);
-  // console.log(mouseInput, pressedKeys);
+  // check for on click tasks
+  switch (event.key) {
+    case ",":
+      p2.shoot();
+      break;
+    case " ":
+      p1.shoot();
+      break;
+  }
 }
 
 // Function to update the pressedKeys object when a key is released
@@ -75,6 +88,40 @@ function drawWalls(currentMap) {
     }
   }
 }
+class Bullet {
+  constructor(x, y, rotation) {
+    this.width = 2;
+    this.x = x - this.width / 2;
+    this.y = y - this.width / 2;
+    this.damage = 1;
+    this.rotation = rotation;
+    this.speed = 2;
+  }
+  insideWall() {
+    if (currentMap[Math.floor(this.y / 10)][Math.floor(this.x / 10)]) {
+      return true;
+    }
+    return false;
+  }
+  move() {
+    var vx = this.speed * Math.cos(this.rotation + Math.PI / 2);
+    var vy = this.speed * Math.sin(this.rotation + Math.PI / 2);
+    this.x -= vx;
+    this.y -= vy;
+  }
+  draw() {
+    ctx.fillStyle = "blue";
+    ctx.fillRect(this.x, this.y, 3, 3);
+    console.log(this.x, this.y);
+  }
+  explode(target = null) {
+    if (target) {
+      target.health -= this.damage;
+    }
+    console.log("boom");
+  }
+}
+
 class Tank {
   constructor() {
     // [this.x, this.y] = [15, 15];
@@ -90,6 +137,7 @@ class Tank {
     this.rotationSpeed = (2 * Math.PI) / 60;
     console.log(this.rotationSpeed);
     this.speed = 1;
+    this.maxBullets = 10;
   }
   getSpawnLocation() {
     let x = Math.floor(((canvas.width - 20) * Math.random()) / 10) * 10 + 5;
@@ -100,6 +148,10 @@ class Tank {
     return [x, y];
   }
   draw() {
+    // draw all of the bullets
+    this.bullets.forEach((bullet) => {
+      bullet.draw();
+    });
     ctx.fillStyle = this.color;
     ctx.translate(this.x, this.y);
     ctx.rotate(this.rotation);
@@ -172,6 +224,11 @@ class Tank {
     });
     return result;
   }
+  shoot() {
+    if (this.bullets.length < this.maxBullets) {
+      this.bullets.push(new Bullet(this.x, this.y, this.rotation));
+    }
+  }
 }
 // code to start a round
 function startRound() {
@@ -236,6 +293,41 @@ function gameLoop() {
           break;
       }
     });
+    p1.bullets.forEach((bullet) => {
+      bullet.move();
+    });
+    p1.bullets = p1.bullets.filter((bullet) => {
+      if (bullet.insideWall()) {
+        bullet.explode();
+        return false;
+      }
+      if (
+        Distance(p2.x, p2.y, bullet.x, bullet.y) <
+        (p1.width + p1.height) / 4
+      ) {
+        bullet.explode(p2);
+        return false;
+      }
+      return true; // Include bullets that don't meet the explosion conditions
+    });
+    p2.bullets.forEach((bullet) => {
+      bullet.move();
+    });
+    p2.bullets = p2.bullets.filter((bullet) => {
+      if (bullet.insideWall()) {
+        bullet.explode();
+        return false;
+      }
+      if (
+        Distance(p1.x, p1.y, bullet.x, bullet.y) <
+        (p1.width + p1.height) / 4
+      ) {
+        bullet.explode(p1);
+        return false;
+      }
+      return true;
+    });
+
     // draw all objects
     p1.draw();
     p2.draw();
