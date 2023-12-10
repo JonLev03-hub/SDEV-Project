@@ -124,7 +124,6 @@ class Tank {
   }
 
   rotate(direction) {
-    console.log(direction, this.rotation);
     if (direction == "left") {
       this.rotation -= this.rotationSpeed;
     } else if (direction == "right") {
@@ -136,11 +135,42 @@ class Tank {
     var vy = this.speed * Math.sin(this.rotation + Math.PI / 2);
     if (direction == "forward") {
       this.x -= vx;
+      if (this.insideWall()) {
+        this.x += vx;
+      }
       this.y -= vy;
+
+      if (this.insideWall()) {
+        this.y += vy;
+      }
     } else if (direction == "backward") {
       this.x += vx;
+      if (this.insideWall()) {
+        this.x -= vx;
+      }
       this.y += vy;
+
+      if (this.insideWall()) {
+        this.y -= vy;
+      }
     }
+  }
+  insideWall(x = this.x, y = this.y) {
+    var corners = [
+      [this.x + (this.width - 1) / 2, this.y + (this.height - 1) / 2],
+      [this.x - (this.width - 1) / 2, this.y - (this.height - 1) / 2],
+      [this.x + (this.width - 1) / 2, this.y - (this.height - 1) / 2],
+      [this.x - (this.width - 1) / 2, this.y + (this.height - 1) / 2],
+    ];
+    var result = false;
+    corners.forEach((corner) => {
+      if (currentMap[Math.floor(corner[1] / 10)][Math.floor(corner[0] / 10)]) {
+        console.log("collision");
+        result = true;
+        return;
+      }
+    });
+    return result;
   }
 }
 // code to start a round
@@ -177,7 +207,6 @@ function gameLoop() {
 
     // check for any player inputs
     pressedKeys.forEach((key) => {
-      console.log(key);
       switch (key) {
         // rotation
         case "a":
