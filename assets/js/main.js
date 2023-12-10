@@ -9,6 +9,9 @@ const pressedKeys = new Set();
 const mouseInput = {};
 var playing = false;
 // game variables
+var bulletSound = new Audio("assets/sounds/bullet2.wav");
+var explosionSound = new Audio("assets/sounds/explosion.wav");
+
 function Distance(x1, y1, x2, y2) {
   const dx = x2 - x1;
   const dy = y2 - y1;
@@ -117,6 +120,8 @@ class Bullet {
   explode(target = null) {
     if (target) {
       target.health -= this.damage;
+      explosionSound.currentTime = 0;
+      explosionSound.play();
     }
     console.log("boom");
   }
@@ -226,6 +231,8 @@ class Tank {
   }
   shoot() {
     if (this.bullets.length < this.maxBullets) {
+      bulletSound.currentTime = 0;
+      bulletSound.play();
       this.bullets.push(new Bullet(this.x, this.y, this.rotation));
     }
   }
