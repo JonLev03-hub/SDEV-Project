@@ -4,6 +4,31 @@ canvas.width = 600;
 canvas.height = 300;
 const ctx = canvas.getContext("2d");
 
+var color1 = "red";
+var color2 = "blue";
+
+function updateSelectedColor(option) {
+  return function () {
+    // Get the selected radio button
+    var selectedRadioButton = document.querySelector(
+      `input[name="colorOption${option}"]:checked`
+    );
+
+    if (selectedRadioButton) {
+      window[`color${option}`] = selectedRadioButton.value;
+      console.log(`Selected Color Option ${option}:`, window[`color${option}`]);
+    }
+  };
+}
+
+// Attach the function to the click event of the radio buttons for each option
+for (let i = 1; i <= 2; i++) {
+  var radioButtons = document.querySelectorAll(`input[name="colorOption${i}"]`);
+  radioButtons.forEach(function (radioButton) {
+    radioButton.addEventListener("click", updateSelectedColor(i));
+  });
+}
+
 // Object to track pressed keys
 const pressedKeys = new Set();
 const mouseInput = {};
@@ -11,6 +36,12 @@ var playing = false;
 // game variables
 var bulletSound = new Audio("assets/sounds/bullet2.wav");
 var explosionSound = new Audio("assets/sounds/explosion.wav");
+bulletSound.volume = 0.2;
+explosionSound.volume = 0.5;
+var p1_score_card = document.getElementById("p1-points");
+var p2_score_card = document.getElementById("p2-points");
+var p1_score = 0;
+var p2_score = 0;
 
 function Distance(x1, y1, x2, y2) {
   const dx = x2 - x1;
@@ -18,15 +49,27 @@ function Distance(x1, y1, x2, y2) {
 
   return Math.sqrt(dx * dx + dy * dy);
 }
+function pause() {
+  playing = false;
+  // do pause screen
+}
+function resume() {
+  playing = true;
+  // do remove pause screen
+}
 // Function to update the pressedKeys object when a key is pressed
 function handleKeyDown(event) {
   pressedKeys.add(event.key);
   // check for on click tasks
   switch (event.key) {
     case ",":
+      p2_score += 5;
+      p2_score_card.innerHTML = p2_score;
       p2.shoot();
       break;
     case " ":
+      p1_score += 5;
+      p1_score_card.innerHTML = p1_score;
       p1.shoot();
       break;
   }
@@ -113,13 +156,13 @@ class Bullet {
     this.y -= vy;
   }
   draw() {
-    ctx.fillStyle = "blue";
+    ctx.fillStyle = "black";
     ctx.fillRect(this.x, this.y, 3, 3);
     console.log(this.x, this.y);
   }
   explode(target = null) {
     if (target) {
-      target.health -= this.damage;
+      target.damage();
       explosionSound.currentTime = 0;
       explosionSound.play();
     }
@@ -128,7 +171,7 @@ class Bullet {
 }
 
 class Tank {
-  constructor() {
+  constructor(color) {
     // [this.x, this.y] = [15, 15];
     [this.x, this.y] = this.getSpawnLocation();
     this.rotation = 0;
@@ -138,11 +181,13 @@ class Tank {
     this.width = 8;
     this.height = 10;
     this.radius = 5;
-    this.color = "red";
+    this.color = color;
     this.rotationSpeed = (2 * Math.PI) / 60;
     console.log(this.rotationSpeed);
     this.speed = 1;
     this.maxBullets = 10;
+    this.health = 2;
+    console.log(color);
   }
   getSpawnLocation() {
     let x = Math.floor(((canvas.width - 20) * Math.random()) / 10) * 10 + 5;
@@ -236,6 +281,14 @@ class Tank {
       this.bullets.push(new Bullet(this.x, this.y, this.rotation));
     }
   }
+  damage(damage = 1) {
+    this.health -= damage;
+    if (this.health <= 0) {
+      playing = false;
+      this.color = "transparent";
+      setTimeout(startRound, 3000);
+    }
+  }
 }
 // code to start a round
 function startRound() {
@@ -243,12 +296,28 @@ function startRound() {
   var startScreen = document.getElementById("startScreen");
   startScreen.classList.add("noDisplay");
 
+  var p1Name = document.getElementById("player1nameinput");
+  var p2Name = document.getElementById("player2nameinput");
+
+  // Get the span element by its ID
+  var p1namecard = document.getElementById("p1name");
+  var p2namecard = document.getElementById("p2name");
+
+  // Update the span text content with the input value
+  console.log(p1Name, p2Name);
+  if (p1Name.value) {
+    p1namecard.innerText = p1Name.value;
+  }
+  if (p2Name.value) {
+    p2namecard.innerText = p2Name.value;
+  }
+
   // generate new map
   currentMap = createRandomMap();
 
   // create tanks
-  p1 = new Tank();
-  p2 = new Tank();
+  p1 = new Tank(color1);
+  p2 = new Tank(color2);
 
   playing = true;
 }
@@ -300,6 +369,7 @@ function gameLoop() {
           break;
       }
     });
+
     p1.bullets.forEach((bullet) => {
       bullet.move();
     });
@@ -312,6 +382,8 @@ function gameLoop() {
         Distance(p2.x, p2.y, bullet.x, bullet.y) <
         (p1.width + p1.height) / 4
       ) {
+        p1_score += 500;
+        p1_score_card.innerHTML = p1_score;
         bullet.explode(p2);
         return false;
       }
@@ -329,6 +401,8 @@ function gameLoop() {
         Distance(p1.x, p1.y, bullet.x, bullet.y) <
         (p1.width + p1.height) / 4
       ) {
+        p2_score += 500;
+        p2_score_card.innerHTML = p2_score;
         bullet.explode(p1);
         return false;
       }
@@ -336,9 +410,9 @@ function gameLoop() {
     });
 
     // draw all objects
-    p1.draw();
-    p2.draw();
   }
+  p2.draw();
+  p1.draw();
   // p1.x += 1;
 }
 
