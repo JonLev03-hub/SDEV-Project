@@ -407,9 +407,18 @@ function gameLoop() {
       }
       return true;
     });
+    if ((p1_score > 5000) | (p2_score > 5000)) {
+      var startScreen = document.getElementById("startScreen");
+      startScreen.classList.remove("noDisplay");
+      playing = false;
+      p1_score = 0;
+      p2_score = 0;
+      p1_score_card.innerHTML = p1_score;
 
-    // draw all objects
+      p2_score_card.innerHTML = p2_score;
+    }
   }
+  // draw all objects
   p2.draw();
   p1.draw();
   // p1.x += 1;
