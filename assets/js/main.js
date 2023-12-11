@@ -60,9 +60,10 @@ function resume() {
 // Function to update the pressedKeys object when a key is pressed
 function handleKeyDown(event) {
   pressedKeys.add(event.key);
+  console.log(event.key);
   // check for on click tasks
   switch (event.key) {
-    case ",":
+    case "Control":
       p2_score += 5;
       p2_score_card.innerHTML = p2_score;
       p2.shoot();
