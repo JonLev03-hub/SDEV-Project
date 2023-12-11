@@ -47,24 +47,24 @@ body {
     background-color:grey;
     position: relative;
     width:600px;
-    height:325px;
+    height:300px;
     border:2px solid black;
 }
-.input {
+.startScreenDiv {
     position: absolute;
     display: flex;
     width:604px;
     justify-content: space-around;
 }
 .tempInput{
-    margin-top: 200px;
+    margin-top: 130px;
     position: absolute;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
 }
-.startButton{
+.button{
     width: 125px;
     font-family: otherFont; 
     font-size: 20px;
@@ -72,7 +72,7 @@ body {
     transition: 0.25s;
 }
 
-.startButton:hover{
+.grow:hover{
     width:200px;
     letter-spacing: 0.20em;
     box-shadow: 0 0 35px var(--clr);
@@ -208,7 +208,7 @@ label {
 .player-score {
     display: flex;
     margin-top: 30px;
-    border:1px solid red;
+    border:1px solid black;
     width: 250px;
     justify-content: space-around;
     padding:5px;
@@ -217,4 +217,34 @@ label {
 .playerScores{
     display: grid;
     grid-template-columns: 1fr 1fr;
+    grid-gap: 15px;
+}
 
+.screen{
+    background-color: rgba(100,100,100,.8);
+    position: absolute;
+    width:600px;
+    height:300px;
+    border:2px solid rgba(10,10,10,.8);
+    margin-top:-6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+.input {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+
+}
+
+.noDisplay {
+    display:none;
+}
+.buttonContainer {
+    display: flex;
+    align-items: space-around;
+    width:75%;
+    justify-content: space-around;
+    margin:auto;
+}
