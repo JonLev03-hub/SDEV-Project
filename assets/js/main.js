@@ -16,7 +16,6 @@ function updateSelectedColor(option) {
 
     if (selectedRadioButton) {
       window[`color${option}`] = selectedRadioButton.value;
-      console.log(`Selected Color Option ${option}:`, window[`color${option}`]);
     }
   };
 }
@@ -59,6 +58,9 @@ function resume() {
 }
 // Function to update the pressedKeys object when a key is pressed
 function handleKeyDown(event) {
+  if (pressedKeys.has(event.key)) {
+    return;
+  }
   pressedKeys.add(event.key);
   console.log(event.key);
   // check for on click tasks
@@ -159,7 +161,6 @@ class Bullet {
   draw() {
     ctx.fillStyle = "black";
     ctx.fillRect(this.x, this.y, 3, 3);
-    console.log(this.x, this.y);
   }
   explode(target = null) {
     if (target) {
@@ -167,7 +168,6 @@ class Bullet {
       explosionSound.currentTime = 0;
       explosionSound.play();
     }
-    console.log("boom");
   }
 }
 
@@ -177,18 +177,17 @@ class Tank {
     [this.x, this.y] = this.getSpawnLocation();
     this.rotation = 0;
     this.bullets = [];
-    console.log(this.x, this.y);
+
     this.img = tankImage1;
     this.width = 8;
     this.height = 10;
     this.radius = 5;
     this.color = color;
     this.rotationSpeed = (2 * Math.PI) / 60;
-    console.log(this.rotationSpeed);
+
     this.speed = 1;
     this.maxBullets = 10;
     this.health = 2;
-    console.log(color);
   }
   getSpawnLocation() {
     let x = Math.floor(((canvas.width - 20) * Math.random()) / 10) * 10 + 5;
@@ -268,7 +267,6 @@ class Tank {
     var result = false;
     corners.forEach((corner) => {
       if (currentMap[Math.floor(corner[1] / 10)][Math.floor(corner[0] / 10)]) {
-        console.log("collision");
         result = true;
         return;
       }
@@ -305,7 +303,7 @@ function startRound() {
   var p2namecard = document.getElementById("p2name");
 
   // Update the span text content with the input value
-  console.log(p1Name, p2Name);
+
   if (p1Name.value) {
     p1namecard.innerText = p1Name.value;
   }
